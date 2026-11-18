@@ -1,0 +1,24 @@
+# Local state and session credentials
+datos/
+datos-demo/
+session.json
+recovery.json
+names.json
+access.json
+*.log
+*.tmp
+# Python and build output
+__pycache__/
+*.py[cod]
+.venv/
+venv/
+work/
+build/
+dist/
+*.spec
+*.exe
+*.zip
+.pytest_cache/
+node_modules/
+.DS_Store
+Thumbs.db
