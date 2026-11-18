@@ -1,0 +1,67 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Control de red</title><link rel="stylesheet" href="/style.css">
+  <script src="/i18n.js" defer></script><script src="/app.js" defer></script>
+</head>
+<body>
+<aside class="sidebar">
+  <a class="brand" href="/" aria-label="Control de red" data-i18n-aria="app_name"><span class="brand-mark">c</span><span class="brand-name" data-i18n="app_name">Control de red</span></a>
+  <div class="nav-label" data-i18n="local_space">ESPACIO LOCAL</div>
+  <a class="nav-item active" href="#devices"><span class="grid-icon">▦</span><span data-i18n="devices">Dispositivos</span><span id="nav-count">0</span></a>
+  <a class="nav-item" href="#activity"><span class="grid-icon">≋</span><span data-i18n="activity">Actividad</span></a>
+  <div class="sidebar-bottom"><span class="live-dot"></span><span data-i18n="running_here">Ejecutándose en este PC</span><small data-i18n="version">Windows · Versión 4.1</small></div>
+</aside>
+<main>
+  <header><div class="breadcrumb"><span data-i18n="my_network">Mi red</span><span>/</span><span data-i18n="devices">Dispositivos</span></div><div class="header-right"><span class="local-tag" data-i18n="local_panel">Panel local</span><button class="text-button" id="quit" data-i18n="quit">Salir ↗</button></div></header>
+  <nav class="language-bar" aria-label="Idioma" data-i18n-aria="language">
+    <span class="language-label" data-i18n="language">Idioma</span>
+    <div class="language-options">
+      <button type="button" lang="es" data-language="es" aria-pressed="true" class="selected" disabled>Español</button>
+      <button type="button" lang="en" data-language="en" aria-pressed="false" disabled>English</button>
+      <button type="button" lang="de" data-language="de" aria-pressed="false" disabled>Deutsch</button>
+      <button type="button" lang="fr" data-language="fr" aria-pressed="false" disabled>Français</button>
+      <button type="button" lang="zh-Hans" data-language="zh" aria-pressed="false" disabled>简体中文</button>
+      <button type="button" lang="pt" data-language="pt" aria-pressed="false" disabled>Português</button>
+      <button type="button" lang="ru" data-language="ru" aria-pressed="false" disabled>Русский</button>
+    </div>
+  </nav>
+  <section class="title-row"><div><p class="eyebrow" data-i18n="eyebrow">TU CONEXIÓN, BAJO CONTROL</p><h1 data-i18n="network_devices">Dispositivos de la red</h1><p class="subtitle" data-i18n="subtitle">Identifica tus equipos y gestiona su acceso a internet.</p></div><button class="button primary" id="scan"><span id="scan-icon">↻</span><span id="scan-label" data-i18n="refresh">Actualizar red</span></button></section>
+  <p class="hint" data-i18n="discovery_note">Búsqueda inicial al abrir; después, usa Actualizar red. El control sigue activo sin búsquedas periódicas. Los equipos nuevos pueden aparecer al observar su tráfico local; pulsa Actualizar red si falta alguno.</p>
+  <div class="banner demo-banner" id="demo" data-i18n="demo_banner" hidden>Modo de demostración · Los dispositivos y los bloqueos de este panel son simulados.</div>
+  <div class="banner error-banner" id="error" role="alert" hidden></div>
+  <div class="banner setup-banner" id="setup" hidden><div><strong data-i18n="blocking_unavailable">Bloqueo no disponible</strong><p id="setup-text"></p></div><a class="button" href="https://npcap.com/#download" target="_blank" rel="noreferrer" data-i18n="download_npcap">Descargar Npcap ↗</a></div>
+  <section class="stats" aria-label="Resumen de la red" data-i18n-aria="network_summary">
+    <div class="stat"><span class="stat-label" data-i18n="detected_devices">Dispositivos detectados</span><div class="stat-value" id="total">—</div><span class="stat-note" id="online-count" data-i18n="finding_network">Buscando la red…</span></div>
+    <div class="stat"><span class="stat-label" data-i18n="access_allowed">Con acceso permitido</span><div class="stat-value" id="allowed">—</div><span class="stat-note"><span class="dot green"></span><span data-i18n="no_block_requested">Sin bloqueo solicitado</span></span></div>
+    <div class="stat"><span class="stat-label" data-i18n="blocks_requested">Bloqueos solicitados</span><div class="stat-value" id="blocked">0</div><span class="stat-note"><span class="dot coral"></span><span data-i18n="bidirectional">Control bidireccional</span></span></div>
+    <div class="stat network-stat"><span class="stat-label" data-i18n="selected_network">Red seleccionada</span><select aria-label="Adaptador de red" data-i18n-aria="network_adapter" id="interface"></select><span class="stat-note" id="network-detail" data-i18n="finding_adapters">Detectando adaptadores…</span></div>
+  </section>
+  <section class="policy-panel" aria-labelledby="policy-heading">
+    <div class="policy-top"><div><h2 id="policy-heading" data-i18n="access_control">Control de acceso</h2><p id="policy-description" data-i18n="policy_intro">Elige cómo gestionar los dispositivos de esta red.</p></div><label class="mode-label" for="access-mode"><span data-i18n="access_mode">Modo de acceso</span><select id="access-mode"><option value="manual" data-i18n="manual">Bloqueo manual</option><option value="allowlist" data-i18n="allowlist">Lista blanca</option></select></label></div>
+    <div class="policy-paused" id="policy-paused" hidden><span data-i18n="policy_paused">Lista blanca en pausa. Los permisos están guardados y no se solicitan bloqueos.</span><button class="button primary" id="resume-policy" data-i18n="resume_policy">Reanudar lista blanca</button></div>
+    <div class="policy-tools"><span data-i18n="protected_note">El router y este PC siempre están permitidos.</span><button class="button" id="add-allowed" data-i18n="add_mac">+ Añadir MAC permitida</button></div>
+    <details id="allowed-details"><summary><span data-i18n="saved_permissions">Permisos guardados</span> <span id="saved-count">0</span></summary><p class="hint" data-i18n="permissions_hint">Puedes autorizar equipos antes de que se conecten. Los permisos se guardan para esta red.</p><ul id="allowed-list" class="allowed-list"></ul><p class="hint" id="no-allowed" data-i18n="no_permissions">Todavía no has añadido dispositivos a la lista blanca.</p></details>
+  </section>
+  <section class="devices-panel" id="devices">
+    <div class="panel-top">
+      <div class="tabs" role="tablist" aria-label="Filtrar dispositivos" data-i18n-aria="filter_devices">
+        <button class="tab selected" data-filter="all" role="tab" aria-selected="true"><span data-i18n="all">Todos</span><span id="tab-total">0</span></button>
+        <button class="tab" data-filter="allowed" role="tab" aria-selected="false"><span data-i18n="allowed">Permitidos</span></button>
+        <button class="tab" data-filter="blocked" role="tab" aria-selected="false"><span data-i18n="blocked">Bloqueados</span></button>
+      </div>
+      <label class="search"><span>⌕</span><input id="search" type="search" placeholder="Buscar nombre, IP o MAC" data-i18n-placeholder="search_placeholder" aria-label="Buscar dispositivo" data-i18n-aria="search_device"></label>
+    </div>
+    <div class="table-scroll"><table><thead><tr><th data-i18n="device_column">DISPOSITIVO</th><th data-i18n="maker_column">FABRICANTE</th><th data-i18n="ip_column">DIRECCIÓN IP</th><th data-i18n="mac_column">DIRECCIÓN MAC</th><th data-i18n="status_column">ESTADO</th><th class="action-heading" data-i18n="access_column">ACCESO</th></tr></thead><tbody id="device-list"></tbody></table></div>
+    <div class="empty" id="empty"><span class="empty-icon">◎</span><h2 data-i18n="preparing_network">Preparando tu red</h2><p data-i18n="initial_devices">Los dispositivos aparecerán aquí al terminar la búsqueda.</p></div>
+    <div class="panel-bottom"><span id="last-scan" data-i18n="waiting_scan">Esperando primer escaneo</span><button class="text-button" id="release" disabled data-i18n="release_all">Desbloquear todos</button></div>
+  </section>
+  <p class="footnote"><span>ⓘ</span><span data-i18n="coverage_note">Mantén este PC y el programa encendidos; puedes cerrar la pestaña. Los bloqueos continúan hasta que los desactives o salgas del programa. IPv6 requiere detectar las direcciones y su router. Las protecciones de la red pueden limitar el bloqueo.</span><span id="coverage"></span></p>
+  <section class="activity-panel" id="activity"><div class="activity-heading"><h2 data-i18n="recent_activity">Actividad reciente</h2><span data-i18n="this_session">Esta sesión</span></div><ol id="events"><li data-i18n="empty_events">Los cambios en el acceso aparecerán aquí.</li></ol></section>
+  <footer><span data-i18n="app_name">Control de red</span><span data-i18n="local_storage">Solo en este equipo · Nombres y permisos guardados localmente</span></footer>
+</main>
+<dialog id="rename-dialog"><form id="rename-form"><h2 data-i18n="device_name">Nombre del dispositivo</h2><p id="rename-description"></p><label for="device-name" data-i18n="custom_name">Nombre personalizado</label><input id="device-name" maxlength="60" placeholder="Por ejemplo, TV del salón" data-i18n-placeholder="name_example" autocomplete="off"><p class="hint" data-i18n="name_hint">Déjalo vacío para usar el nombre detectado.</p><div class="dialog-actions"><button type="button" class="button" id="cancel-rename" data-i18n="cancel">Cancelar</button><button type="submit" class="button primary" data-i18n="save_name">Guardar nombre</button></div></form></dialog>
+<dialog id="allow-dialog"><form id="allow-form"><h2 data-i18n="add_allowed_device">Añadir dispositivo permitido</h2><p data-i18n="mac_hint">Usa la MAC que el dispositivo utiliza en esta red Wi-Fi o Ethernet.</p><label for="allowed-mac" data-i18n="mac_address">Dirección MAC</label><input id="allowed-mac" required maxlength="17" placeholder="AA:BB:CC:DD:EE:02" autocomplete="off" spellcheck="false"><label for="allowed-name" data-i18n="optional_name">Nombre opcional</label><input id="allowed-name" maxlength="60" placeholder="Por ejemplo, Mi teléfono" data-i18n-placeholder="phone_example" autocomplete="off"><p class="hint" data-i18n="allow_hint">También puedes pulsar Permitir en un dispositivo detectado.</p><div class="dialog-actions"><button type="button" class="button" id="cancel-allow" data-i18n="cancel">Cancelar</button><button type="submit" class="button primary" id="save-allowed" data-i18n="save_permission">Guardar permiso</button></div></form></dialog>
+<div class="toast" id="toast" role="status" hidden></div>
+</body></html>
